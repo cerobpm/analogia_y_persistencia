@@ -1,0 +1,14 @@
+config.json
+salida.json
+salidaResponse.json
+SalidasAnalogia.txt
+SalidasPersist.txt
+stats.csv
+test
+lib
+lib64
+bin
+Results
+share
+tmp
+Funciones/__pycache__
