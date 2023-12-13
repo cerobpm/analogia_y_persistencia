@@ -1,0 +1,15 @@
+{
+    "api": {
+        "username":"",
+        "password":"",
+        "url":"",
+        "token": ""
+    },
+    "database": {
+        "dbname": "",
+        "user": "",
+        "host": "",
+        "port": 5432
+    }
+}
+
