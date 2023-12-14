@@ -432,7 +432,7 @@ def MetodoAnalogia(nomEst,df,var,mes_obj,yr_obj,vent_resamp,ParamMetodo):
     
     #df_union["meses_ord"] = df_union["month"] + 6 - mes_selct
     #df_union.loc[df_union["meses_ord"]  > 12, 'meses_ord'] = df_union.loc[df_union["meses_ord"]  > 12, 'meses_ord'] - 12
-    PlotAnalogias(nomEst,df_union,df_Obs_previo,var,par_comp,df,vent_resamp)
+    #PlotAnalogias(nomEst,df_union,df_Obs_previo,var,par_comp,df,vent_resamp)
 
     return df_union
 

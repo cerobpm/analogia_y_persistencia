@@ -185,9 +185,9 @@ for CB_i in list(Estaciones.keys()):
         df_prono_presis = MetodoPersistencia(nomEst,df_resamp,ObjSerie_i.var,mes_select,yr_select,longBusqueda,longProno,vent_resamp,Prono=True)
 
         # Mes a formato fecha
-        def month2Date(x):
-                return datetime(yr_select, x, 1,0,0,0,0)
-        df_prono_presis['month'] = df_prono_presis['month'].apply(month2Date)
+        def month2Date(y,x):
+                return datetime(y, x, 1,0,0,0,0)
+        df_prono_presis['month'] = df_prono_presis.apply(lambda x: month2Date(x.year, x.month), axis=1)
 
         # Formato para guardar
         series_persist += [prono2serie( df_prono_presis,
