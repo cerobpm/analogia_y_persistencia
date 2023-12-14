@@ -188,12 +188,14 @@ for CB_i in list(Estaciones.keys()):
         # Transfroma los datos
         TransfDatos(df_resamp,ObjSerie_i.var,vent_resamp,PlotTransf=False)
         df_prono_analog = MetodoAnalogia(nomEst,df_resamp,ObjSerie_i.var,mes_select,yr_select,vent_resamp,Param_Modelos)
-        print(df_prono_analog)
-        df_prono_analog = df_prono_analog[['month','Prono']]
+        
         # Mes a formato fecha
-        def month2Date(x):
-                return date(yr_select, x, 1)
-        df_prono_analog['month'] = df_prono_analog['month'].apply(month2Date)
+        def month2Date(y,x):
+                return datetime(y, x, 1,0,0,0,0)
+        df_prono_analog['month'] = df_prono_analog.apply(lambda x: month2Date(x.year, x.month), axis=1)
+
+        df_prono_analog = df_prono_analog[['month','Prono']]
+    
     # Formato para guardar
         series_analogia += [prono2serie( df_prono_analog,
                                         main_colname="Prono",
