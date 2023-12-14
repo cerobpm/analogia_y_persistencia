@@ -121,7 +121,7 @@ def MetodoPersistencia( nomEst:'Nombre de la estacion',
             # plt.close()
 
         # Arma BoxPlot
-        FiguraSerieBoxPlot(nomEst,dfObj,year,dfProno,'VarProno',df_full,vent_resamp,var,longBusqueda)
+        #FiguraSerieBoxPlot(nomEst,dfObj,year,dfProno,'VarProno',df_full,vent_resamp,var,longBusqueda)
         return dfProno
     
     # Para el Cálculo del error

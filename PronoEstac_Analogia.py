@@ -71,7 +71,7 @@ Estaciones = {
                 },
     'Itaipu': {    'name': 'Itaipu' ,
         'origen':'BBDD',
-        'id_serie':1790,# 9691  1790
+        'id_serie':941,# 9691  1790
         'series_id_qmm_sim':25143,#25116,
         'series_id_hmm_sim':34848,#34835,
         'frecAdopt':'D',
@@ -94,7 +94,7 @@ Param_Modelos = {
     'ruta_salidas': 'Results/',
 
     'longBusqueda': 6,         # longitud de la serie para buscar Analogas
-    'longProno':3,              # longitud del pronostico 
+    'longProno':4,              # longitud del pronostico 
     
     # Analogias
     'orden':'RMSE',         # Ordena Por
