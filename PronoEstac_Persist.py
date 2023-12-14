@@ -39,7 +39,6 @@ Plot = False #   True    False
 timestart = "1905-01-01T01:00:00Z"
 timeend = "2028-05-10T12:00:00Z"
 
-
 Estaciones = { 
     'Puerto Pilcomayo': {   'name': 'Puerto Pilcomayo' ,
                             'origen':'BBDD',
