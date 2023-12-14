@@ -70,7 +70,8 @@ def MetodoPersistencia( nomEst:'Nombre de la estacion',
                         longBusqueda:'long serie hacia atrás',
                         longProno:'longitud del prono',
                         vent_resamp:'Ventana temporal del resampleo',
-                        Prono=True):
+                        Prono=True,
+                        Plot=False):
     
     # Busca la fecha seleccionada
     fecha_Obj = df_full.query("year=="+str(year)+" and "+vent_resamp+"=="+str(mes))
@@ -101,10 +102,13 @@ def MetodoPersistencia( nomEst:'Nombre de la estacion',
         # Arma el Df para el prono. Fecha Selecionada + dias prono
         
         index_i = range(idx_fecha_fin, idx_fecha_fin_prono, 1)
-
-        dfProno = pd.DataFrame(index = index_i,columns=[vent_resamp,'VarProno'])
+        dfProno = pd.DataFrame(index = index_i,columns=['id',vent_resamp,'VarProno'])
         dfProno[vent_resamp] = range(mes+1, mes+1+longProno, 1)
+        
         ### Solo para vent_resamp='month' ####
+        dfProno['id']= str(year)+str(mes)
+        dfProno['year']= year
+        dfProno.loc[dfProno[vent_resamp]  > 12, 'year'] = dfProno.loc[dfProno[vent_resamp]  > 12, 'year'] + 1
         dfProno.loc[dfProno[vent_resamp]  > 12, vent_resamp] = dfProno.loc[dfProno[vent_resamp]  > 12, vent_resamp] - 12
 
         # Agrega el Q pronosticado.
@@ -121,7 +125,8 @@ def MetodoPersistencia( nomEst:'Nombre de la estacion',
             # plt.close()
 
         # Arma BoxPlot
-        #FiguraSerieBoxPlot(nomEst,dfObj,year,dfProno,'VarProno',df_full,vent_resamp,var,longBusqueda)
+        if Plot:
+            FiguraSerieBoxPlot(nomEst,dfObj,year,dfProno,'VarProno',df_full,vent_resamp,var,longBusqueda)
         return dfProno
     
     # Para el Cálculo del error
