@@ -8,6 +8,7 @@ import time
 import matplotlib.pyplot as plt
 import seaborn as sns
 import sqlite3
+import logging
 
 from Funciones.ClasesFunciones import Obj_Serie_v2, prono2serie, GuardaEnBBDD
 from Funciones.FuncSeasonalProno import MetodoPersistencia,ErrorXPersistencia
@@ -187,7 +188,11 @@ for CB_i in list(Estaciones.keys()):
     if dic_Metodo['Analogias']['Prono']:
         # Transfroma los datos
         TransfDatos(df_resamp,ObjSerie_i.var,vent_resamp,PlotTransf=False)
-        df_prono_analog = MetodoAnalogia(nomEst,df_resamp,ObjSerie_i.var,mes_select,yr_select,vent_resamp,Param_Modelos)
+        try:
+            df_prono_analog = MetodoAnalogia(nomEst,df_resamp,ObjSerie_i.var,mes_select,yr_select,vent_resamp,Param_Modelos)
+        except ValueError as e:
+            logging.error("Error al ejecutar método analogía para estacion %s: %s. Salteando" % (nomEst, e))
+            continue
         
         # Mes a formato fecha
         def month2Date(y,x):

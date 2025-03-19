@@ -47,7 +47,7 @@ def observacionesListToDataFrame(data: list):
     data.sort_index(inplace=True)
     return data[["valor",]]
 
-def tryParseAndLocalizeDate(date_string,timezone='America/Argentina/Buenos_Aires'):
+def tryParseAndLocalizeDate(date_string,timezone='UTC'): # 'America/Argentina/Buenos_Aires'):
     date = dateutil.parser.isoparse(date_string) if isinstance(date_string,str) else date_string
     if date.tzinfo is None or date.tzinfo.utcoffset(date) is None:
         try:

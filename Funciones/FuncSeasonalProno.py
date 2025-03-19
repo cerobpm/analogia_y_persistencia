@@ -345,6 +345,9 @@ def MetodoAnalogia(nomEst,df,var,mes_obj,yr_obj,vent_resamp,ParamMetodo):
     # Compara un años con sus parecidos
     _ , dfObj_0, Result_Indic = CalcIndicXFecha(df,yr_obj,mes_obj,longBusqueda,longProno)
     
+    if not _:
+        raise ValueError("No se pudo comparar con años parecidos")
+
     if False:   # Compara Indicadores
         x = 'ErrVol_norm'
         y = 'CoefC_norm'
