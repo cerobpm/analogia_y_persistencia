@@ -14,6 +14,8 @@ from Funciones.ClasesFunciones import Obj_Serie_v2, prono2serie, GuardaEnBBDD
 from Funciones.FuncSeasonalProno import MetodoPersistencia,ErrorXPersistencia
 from Funciones.FuncSeasonalProno import TransfDatos, MetodoAnalogia, MetodoAnalogia_errores_v2
 
+skip_failed = False
+
 # Ultimo mes a partir del cual se hace el pronostico. 
 # Se cuenta con datos para este mes. Por lo menos 25 datos diarios.
 fecha_emision = datetime.now()
@@ -191,8 +193,11 @@ for CB_i in list(Estaciones.keys()):
         try:
             df_prono_analog = MetodoAnalogia(nomEst,df_resamp,ObjSerie_i.var,mes_select,yr_select,vent_resamp,Param_Modelos)
         except ValueError as e:
-            logging.error("Error al ejecutar método analogía para estacion %s: %s. Salteando" % (nomEst, e))
-            continue
+            if skip_failed:
+                logging.error("Error al ejecutar método analogía para estacion %s: %s. Salteando" % (nomEst, e))
+                continue
+            else:
+                raise e
         
         # Mes a formato fecha
         def month2Date(y,x):
