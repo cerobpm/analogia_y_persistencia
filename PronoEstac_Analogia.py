@@ -44,6 +44,7 @@ Estaciones = {
     'Puerto Pilcomayo': {   'name': 'Puerto Pilcomayo' ,
                             'origen':'BBDD',
                             'id_serie':904,# 55 904
+                            'id_serie_relleno': 26702,
                             'series_id_qmm_sim':24658,
                             'series_id_hmm_sim':34833,
                             'frecAdopt':'D',
@@ -116,6 +117,7 @@ for CB_i in list(Estaciones.keys()):
     Parametros = Estaciones[nomEst]         # Parametros de la serie
 
     serie_id = int(Parametros['id_serie'])
+    serie_id_relleno = Parametros['id_serie_relleno'] if 'id_serie_relleno' in Parametros else None 
     vent_resamp = Parametros['vent_resamp'] # mensual
 
     Parametros['timestart'] = timestart
@@ -143,6 +145,9 @@ for CB_i in list(Estaciones.keys()):
     
     # Elimina outliers
     outliers, ObjSerie_i.serie = ObjSerie_i.removeOutliers(ObjSerie_i.serie,limite_outliers,column=ObjSerie_i.var)
+    if ObjSerie_i.serie_relleno is not None:
+        outliers_relleno, ObjSerie_i.serie_relleno = ObjSerie_i.removeOutliers(ObjSerie_i.serie_relleno,limite_outliers,column=ObjSerie_i.var)
+    
     # Regulariza la serie
     ObjSerie_i.SerieRegulariza(Parametros)  
     df_obs = ObjSerie_i.serie_reg.copy()
