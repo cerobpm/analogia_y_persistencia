@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
+# import pandas as pd
 import numpy as np
 import datetime
-from datetime import timedelta, datetime, date
+from datetime import datetime # timedelta, date
 import time
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import sqlite3
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# import sqlite3
 
 from Funciones.ClasesFunciones import Obj_Serie_v2, prono2serie, GuardaEnBBDD
-from Funciones.FuncSeasonalProno import MetodoPersistencia,ErrorXPersistencia
+# from Funciones.FuncSeasonalProno import MetodoPersistencia,ErrorXPersistencia
 from Funciones.FuncSeasonalProno import TransfDatos, MetodoAnalogia, MetodoAnalogia_errores_v2
 
 # Ultimo mes a partir del cual se hace el pronostico. 
