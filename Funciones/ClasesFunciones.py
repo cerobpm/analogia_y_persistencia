@@ -47,7 +47,7 @@ def observacionesListToDataFrame(data: list):
     data.sort_index(inplace=True)
     return data[["valor",]]
 
-def tryParseAndLocalizeDate(date_string,timezone='America/Argentina/Buenos_Aires'):
+def tryParseAndLocalizeDate(date_string,timezone='UTC'): # America/Argentina/Buenos_Aires'):
     date = dateutil.parser.isoparse(date_string) if isinstance(date_string,str) else date_string
     if date.tzinfo is None or date.tzinfo.utcoffset(date) is None:
         try:
@@ -325,7 +325,11 @@ class Obj_Serie_v2:
             self.timeend = params["timeend"]
         else:
             self.timeend = None
-
+        if 'id_serie_relleno' in params:
+            self.id_serie_relleno = params["id_serie_relleno"]
+        else: 
+            self.id_serie_relleno = None
+        
         # Carga la Serie
         if self.origen == 'BBDD':
             self.SeriesReadBBDD()                     # Lee la serie de la BBDD
@@ -334,10 +338,17 @@ class Obj_Serie_v2:
             self.SeriesReadCSV(params['file_path'])             # Lee la serie de un csv
         
         self.serie = self.serie.rename(columns={'valor':self.var})
+        if self.serie_relleno is not None:
+            self.serie_relleno = self.serie_relleno.rename(columns={'valor':self.var})
 
     def SeriesReadBBDD(self):# Carga datos
         serie_i = readSerie(self.id,self.timestart,self.timeend)
         self.serie = observacionesListToDataFrame(serie_i["observaciones"])
+        if self.id_serie_relleno is not None:
+            serie_j = readSerie(self.id_serie_relleno,self.timestart,self.timeend)
+            self.serie_relleno = observacionesListToDataFrame(serie_j["observaciones"])
+        else:
+            self.serie_relleno = None
 
     def toCSV(self,serie_i,ruta,sufijo='0'):
         return serie_i.to_csv(ruta+self.name+'_'+str(self.id)+'_'+sufijo+'.csv')
@@ -347,9 +358,13 @@ class Obj_Serie_v2:
         self.serie.index = self.serie["timestart"].apply(tryParseAndLocalizeDate)
         del self.serie["timestart"]
 
-    def SerieRegulariza(self,param):
+    def SerieRegulariza(self,param,fill_nulls=True):
         self.serie_reg = serieRegular(self.serie,timeInterval=timedelta(hours=param['timeHInterval']),interpolation_limit=param['limIterp'],column=self.var)
         self.NNaN = self.serie_reg[self.var].isna().sum()
+        if fill_nulls and self.NNaN > 0 and self.serie_relleno is not None:
+            serie_relleno_reg = serieRegular(self.serie_relleno,timeInterval=timedelta(hours=param['timeHInterval']),interpolation_limit=param['limIterp'],column=self.var)
+            self.serie_reg = serieFillNulls(self.serie_reg, serie_relleno_reg, self.var, self.var)
+            
         return self.serie_reg
 
     def descript_estadisticos(self,df,variable):# Estadistica Descriptiva
@@ -683,4 +698,33 @@ def cargaObs(serie_id,timestart,timeend):
     df_obs_i['fecha'] = df_obs_i.index
     df_obs_i = df_obs_i.reset_index(drop=True)
     return df_obs_i
+
+def serieFillNulls(data : pd.DataFrame, other_data : pd.DataFrame, column : str="valor", other_column : str="valor", fill_value : float=None, shift_by : int=0, bias : float=0, extend=False, tag_column=None):
+    """
+    rellena nulos de data con valores de other_data donde coincide el index. Opcionalmente aplica traslado rígido en x (shift_by: n registros) y en y (bias: float)
+
+    si extend=True el índice del dataframe resultante será la unión de los índices de data y other_data (caso contrario será igual al índice de data)
+    """
+    # logging.debug("before. data.index.name: %s. other_data.index.name: %s" % (data.index.name, other_data.index.name))
+    mapper = {}
+    mapper[other_column] = "valor_fillnulls"
+    how = "outer" if extend else "left"
+    if tag_column is not None:
+        mapper[tag_column] = "tag_fillnulls"
+        data = data.join(other_data[[other_column,tag_column]].rename(mapper,axis=1), how = how)
+        data[column] = data[column].fillna(data["valor_fillnulls"].shift(shift_by, axis = 0) + bias)    
+        data[tag_column] = data[tag_column].fillna(data["tag_fillnulls"].shift(shift_by, axis = 0))
+        if fill_value is not None:
+            data[column] = data[column].fillna(fill_value)
+            data[tag_column] = data[tag_column].fillna("filled")
+        del data["valor_fillnulls"]
+        del data["tag_fillnulls"]
+    else:
+        data = data.join(other_data[[other_column,]].rename(mapper,axis=1), how = how)
+        data[column] = data[column].fillna(data["valor_fillnulls"].shift(shift_by, axis = 0) + bias)
+        del data["valor_fillnulls"]
+        if fill_value is not None:
+            data[column] = data[column].fillna(fill_value)
+    # logging.debug("after. data.index.name: %s. other_data.index.name: %s" % (data.index.name, other_data.index.name))
+    return data
 
